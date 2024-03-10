@@ -16,7 +16,7 @@ export default function GameBoard({ initialHouse, initialPlayer, deckId }: GameB
     const [house, setHouse] = useState(initialHouse)
     const [player, setPlayer] = useState(initialPlayer)
     const [score, setScore] = useState({ house: 0, player: 0 });
-    const [gameStatus, setGameStatus] = useState(true)
+    const [gameStatus, setGameStatus] = useState('playing')
 
     useEffect(() => {
         const updateScore = () => {
@@ -26,8 +26,14 @@ export default function GameBoard({ initialHouse, initialPlayer, deckId }: GameB
         }
 
         if (score.player > 21 || score.house === 21) {
-            setGameStatus(false)
-            window.alert("You lost! You lost!")
+            setGameStatus('lost')
+        }
+        if (score.player === 21) {
+            setGameStatus('won')
+        }
+
+        if (score.player === 0 && score.house === 0) {
+            setGameStatus('playing')
         }
 
         updateScore();
@@ -39,19 +45,15 @@ export default function GameBoard({ initialHouse, initialPlayer, deckId }: GameB
 
         setPlayer([...player, newCard.cards[0]])
 
-        if (score.player === 21) {
-            window.alert("You won! You Won!")
-        }
+
     }
 
     const handleStand = () => {
-        if (score.player > score.house) {
-            setGameStatus(false);
-            return window.alert("You Won! You Won!")
+        if (score.player >= score.house) {
+            return setGameStatus('won');
         }
 
-        setGameStatus(false)
-        return window.alert("You Lost! You Lost!")
+        return setGameStatus('lost')
     }
 
     const handleNewGame = async () => {
@@ -59,26 +61,48 @@ export default function GameBoard({ initialHouse, initialPlayer, deckId }: GameB
         const newPlayerHand = await getCard(deckId, 2)
         const newHouseHand = await getCard(deckId, 2)
 
+        setScore({ house: 0, player: 0 })
         setHouse(newHouseHand.cards)
         setPlayer(newPlayerHand.cards)
-
-        setGameStatus(true)
     }
 
     return (
         <div>
             <Player title="The House" hand={house} score={score.house}/>
+            <hr className='h-0.5  bg-slate-600 mb-8'/>
             <Player title="The Player" hand={player} score={score.player}/>
 
-            {gameStatus ?
-                <div className="flex justify-evenly">
-                    <button onClick={drawCard}>Hit</button>
-                    <button onClick={handleStand}>Stand</button>
-                </div> :
-                <div>
-                    <button onClick={handleNewGame}>New Game</button>
+            {gameStatus === 'playing' &&
+                <div className="text-center">
+                    <button
+                        className='rounded-full mr-8 bg-green-600 text-slate-50 p-4 w-24 transition hover:scale-110 hover:drop-shadow-lg'
+                        onClick={drawCard}>Hit
+                    </button>
+                    <button
+                        className='rounded-full bg-red-500 text-slate-50 p-4 w-24 transition hover:scale-110 hover:drop-shadow-lg'
+                        onClick={handleStand}>Stand
+                    </button>
                 </div>
             }
+
+
+            {
+                gameStatus !== 'playing' &&
+
+                <div
+                    className="flex justify-center items-center overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none w-screen h-screen bg-black bg-opacity-60">
+                    <div
+                        className="text-center bg-slate-50 w-80 h-80 rounded p-8 flex flex-col items-center justify-center">
+                        <h2 className='animate-bounce text-3xl font-bold mb-4'>{gameStatus === 'won' ? 'You won!' : 'You lost!'}</h2>
+                        <button
+                            className='rounded-full bg-green-600 text-slate-50 p-4 transition hover:scale-110 hover:drop-shadow-lg'
+                            onClick={handleNewGame}>
+                            New Game
+                        </button>
+                    </div>
+                </div>
+            }
+
         </div>
     );
 }

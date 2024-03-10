@@ -1,7 +1,5 @@
 import { NextRequest } from "next/server";
 
-export const dynamic: string = 'force-dynamic'
-
 export async function GET(request: NextRequest): Promise<Response> {
     const searchParams: URLSearchParams = request.nextUrl.searchParams
 

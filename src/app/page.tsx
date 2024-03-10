@@ -20,7 +20,7 @@ export interface DrawCardsResponse {
 
 
 async function getInitialCards(deckId: string = 'new') {
-    const res = await fetch(`https://www.deckofcardsapi.com/api/deck/${deckId}/draw/?count=2`)
+    const res: Response = await fetch(`https://www.deckofcardsapi.com/api/deck/${deckId}/draw/?count=2`)
 
     if (!res.ok) {
         throw new Error("Failed to fetch shuffle data.");
@@ -30,12 +30,13 @@ async function getInitialCards(deckId: string = 'new') {
 }
 
 export default async function Home() {
-    const house = await getInitialCards();
-    const deckId = house.deck_id;
-    const player = await getInitialCards(deckId);
+    const house: DrawCardsResponse = await getInitialCards();
+    const deckId: string = house.deck_id;
+    const player: DrawCardsResponse = await getInitialCards(deckId);
 
     return (
-        <main className="flex min-h-screen flex-col items-center justify-between p-24">
+        <main className="container mx-auto min-h-screen p-24 text-center">
+            <h1 className='font-bold text-6xl mb-16'>Let&apos;s Play Some Blackjack!</h1>
             <GameBoard initialHouse={house.cards} initialPlayer={player.cards} deckId={deckId}/>
         </main>
     );
