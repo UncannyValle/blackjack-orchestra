@@ -1,4 +1,3 @@
-'use strict'
 import Image from 'next/image'
 import { Card } from "@/app/page";
 
@@ -35,8 +34,6 @@ export default function Player({ hand, score, title }: Props) {
                 )}
             </div>
             <h1 className='font-bold text-3xl text-center my-8'>{title}: {score}</h1>
-
-            {/*<h3 className='font-bold text-2xl'>Total: <span className='font-normal'>{score}</span></h3>*/}
         </div>
     )
 }

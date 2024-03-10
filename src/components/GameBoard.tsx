@@ -44,8 +44,6 @@ export default function GameBoard({ initialHouse, initialPlayer, deckId }: GameB
         const newCard = await getCard(deckId, 1)
 
         setPlayer([...player, newCard.cards[0]])
-
-
     }
 
     const handleStand = () => {
@@ -58,10 +56,10 @@ export default function GameBoard({ initialHouse, initialPlayer, deckId }: GameB
 
     const handleNewGame = async () => {
         await shuffleDeck(deckId);
-        const newPlayerHand = await getCard(deckId, 2)
-        const newHouseHand = await getCard(deckId, 2)
 
+        const [newHouseHand, newPlayerHand] = await Promise.all([getCard(deckId, 2), getCard(deckId, 2)])
         setScore({ house: 0, player: 0 })
+
         setHouse(newHouseHand.cards)
         setPlayer(newPlayerHand.cards)
     }

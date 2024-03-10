@@ -18,7 +18,6 @@ export interface DrawCardsResponse {
     remaining: number;
 }
 
-
 async function getInitialCards(deckId: string = 'new') {
     const res: Response = await fetch(`https://www.deckofcardsapi.com/api/deck/${deckId}/draw/?count=2`)
 
