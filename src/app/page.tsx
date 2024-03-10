@@ -30,14 +30,14 @@ async function getInitialCards(deckId: string = 'new') {
 }
 
 export default async function Home() {
-  const houseCards = await getInitialCards();
-  const deckId = houseCards.deck_id;
-  const playerCards = await getInitialCards(deckId);
+  const house = await getInitialCards();
+  const deckId = house.deck_id;
+  const player = await getInitialCards(deckId);
 
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <Gameboard initialHouse={houseCards} initialPlayer={playerCards}/>
+      <Gameboard initialHouse={house.cards} initialPlayer={player.cards} deckId={deckId}/>
     </main>
   );
 }

@@ -1,36 +1,57 @@
 'use client'
 
 import { useEffect, useState } from "react";
-import { DrawCardsResponse } from "@/app/page";
-import TheHouse from "@/components/TheHouse";
+import { Card } from "@/app/page";
 import { calculatePointTotal } from "@/lib/scoreCountingLogic";
+import { getCard } from "@/lib/gamePlayLogic"
 import Player from "@/components/Player";
 
 type GameBoardProps = {
-    initialHouse: DrawCardsResponse
-    initialPlayer: DrawCardsResponse
+    initialHouse: Card[]
+    initialPlayer: Card[]
+    deckId: string
 }
 
-export default function GameBoard ({initialHouse, initialPlayer}: GameBoardProps) {
-    const [house,setHouse] = useState<DrawCardsResponse>(initialHouse)
-    const [player,setPlayer] = useState<DrawCardsResponse>(initialPlayer)
-    const [score,setScore] = useState({house:0,player:0});
+export default function GameBoard({ initialHouse, initialPlayer, deckId }: GameBoardProps) {
+    const [house, setHouse] = useState(initialHouse)
+    const [player, setPlayer] = useState(initialPlayer)
+    const [score, setScore] = useState({ house: 0, player: 0 });
 
     useEffect(() => {
         const updateScore = () => {
-            const newHouseScore = calculatePointTotal(house.cards)
-            const newPlayerScore = calculatePointTotal(player.cards)
-            setScore({player: newPlayerScore,house:newHouseScore});
+            const newHouseScore = calculatePointTotal(house)
+            const newPlayerScore = calculatePointTotal(player)
+            setScore({ player: newPlayerScore, house: newHouseScore });
+        }
+
+        if (score.player > 21 || score.house === 21) {
+            window.alert("You lost! You lost!")
         }
 
         updateScore();
 
-    }, [house.cards, player.cards, score])
+    }, [house, player, score.house, score.player])
+
+    const drawCard = async () => {
+        const newCard = await getCard(score, deckId)
+
+        setPlayer([...player, newCard.cards[0]])
+    }
+
+    const handleStand = () => {
+        if (score.player > score.house) {
+            return window.alert("You Won! You Won!")
+        }
+
+        return window.alert("You Lost! You Lost!")
+    }
 
     return (
         <div>
-            <Player title="The House" hand={house.cards} score={score.house}/>
-            <Player title="The Player" hand={player.cards} score={score.player} />
+            <Player title="The House" hand={house} score={score.house}/>
+            <Player title="The Player" hand={player} score={score.player}/>
+            <button onClick={drawCard}>Hit</button>
+            <button onClick={handleStand}>Stand</button>
         </div>
     );
 }

@@ -1,4 +1,4 @@
-import { Card } from "@/app/game-start/[deck_id]/page";
+import { Card } from "@/app/page";
 
 export const calculatePointTotal = (hand: Card[]) => {
     let newScore = 0
@@ -28,3 +28,4 @@ export const calculatePointTotal = (hand: Card[]) => {
 
     return newScore;
 };
+
