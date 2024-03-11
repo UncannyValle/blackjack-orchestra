@@ -44,6 +44,7 @@ export default function GameBoard({ initialHouse, initialPlayer, deckId }: GameB
     }
 
     const handleNewGame = async () => {
+        setGameStatus('loading')
         await shuffleDeck(deckId);
         const [newHouseHand, newPlayerHand] = await Promise.all([getCard(deckId, 2), getCard(deckId, 2)])
 
@@ -54,11 +55,16 @@ export default function GameBoard({ initialHouse, initialPlayer, deckId }: GameB
 
     return (
         <>
-            <Player title="The House" hand={house} score={houseScore}/>
-            <hr className='h-0.5  bg-slate-600 mb-8'/>
-            <Player title="The Player" hand={player} score={playerScore}/>
+            {gameStatus !== 'loading' ? <>
+                    <Player title="The House" hand={house} score={houseScore}/>
+                    <hr className='h-0.5  bg-slate-600 mb-8'/>
+                    <Player title="The Player" hand={player} score={playerScore}/>
+                </> :
+                <h1>Loading</h1>
+            }
 
-            {gameStatus === 'playing' &&
+
+            {gameStatus === 'playing' ?
                 <div className="text-center">
                     <button
                         className='rounded-full mr-8 bg-green-600 text-slate-50 p-4 w-24 transition hover:scale-110 hover:drop-shadow-lg'
@@ -68,18 +74,15 @@ export default function GameBoard({ initialHouse, initialPlayer, deckId }: GameB
                         className='rounded-full bg-red-500 text-slate-50 p-4 w-24 transition hover:scale-110 hover:drop-shadow-lg'
                         onClick={handleStand}>Stand
                     </button>
-                </div>
-            }
-
-
-            {
-                gameStatus !== 'playing' &&
+                </div> :
 
                 <div
                     className="flex justify-center items-center overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none w-screen h-screen bg-black bg-opacity-60">
                     <div
                         className="text-center bg-slate-50 w-80 h-80 rounded p-8 flex flex-col items-center justify-center">
                         <h2 className='animate-bounce text-3xl font-bold mb-4'>{gameStatus === 'won' ? 'You won!' : 'You lost!'}</h2>
+                        <h3 className='text-lg mb-8'><span className='font-bold'>Player:</span> {playerScore} <span
+                            className='font-bold'>House:</span> {houseScore}</h3>
                         <button
                             className='rounded-full bg-green-600 text-slate-50 p-4 transition hover:scale-110 hover:drop-shadow-lg'
                             onClick={handleNewGame}>
@@ -88,7 +91,6 @@ export default function GameBoard({ initialHouse, initialPlayer, deckId }: GameB
                     </div>
                 </div>
             }
-
         </>
     );
 }
