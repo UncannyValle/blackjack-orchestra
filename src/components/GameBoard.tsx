@@ -22,10 +22,10 @@ export default function GameBoard({ initialHouse, initialPlayer, deckId }: GameB
 
     useEffect(() => {
         if (playerScore > 21 || houseScore === 21) {
-            setGameStatus('lost')
+            return setGameStatus('lost')
         }
         if (playerScore === 21) {
-            setGameStatus('won')
+            return setGameStatus('won')
         }
 
     }, [houseScore, playerScore])
@@ -60,11 +60,11 @@ export default function GameBoard({ initialHouse, initialPlayer, deckId }: GameB
                     <hr className='h-0.5  bg-slate-600 mb-8'/>
                     <Player title="The Player" hand={player} score={playerScore}/>
                 </> :
-                <h1>Loading</h1>
+                <h1>Loading Cards...</h1>
             }
 
 
-            {gameStatus === 'playing' ?
+            {gameStatus === 'playing' || gameStatus === 'loading' ?
                 <div className="text-center">
                     <button
                         className='rounded-full mr-8 bg-green-600 text-slate-50 p-4 w-24 transition hover:scale-110 hover:drop-shadow-lg'
