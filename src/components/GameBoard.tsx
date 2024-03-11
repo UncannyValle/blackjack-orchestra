@@ -79,8 +79,8 @@ export default function GameBoard({ initialHouse, initialPlayer, deckId }: GameB
                 <div
                     className="flex justify-center items-center overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none w-screen h-screen bg-black bg-opacity-60">
                     <div
-                        className="text-center bg-slate-50 w-80 h-80 rounded p-8 flex flex-col items-center justify-center">
-                        <h2 className='animate-bounce text-3xl font-bold mb-4'>{gameStatus === 'won' ? 'You won!' : 'You lost!'}</h2>
+                        className="text-center bg-slate-50 text-black w-80 h-80 rounded p-8 flex flex-col items-center justify-center">
+                        <h2 className='animate-bounce text-3xl font-bold mb-4'>{gameStatus === 'won' ? 'You won!🥳' : 'You lost!😕'}</h2>
                         <h3 className='text-lg mb-8'><span className='font-bold'>Player:</span> {playerScore} <span
                             className='font-bold'>House:</span> {houseScore}</h3>
                         <button
