@@ -17,13 +17,13 @@ const values: { [key: string]: string } = {
 
 export default function Player({ hand, score, title }: Props) {
     return (
-        <div className='w-1/2 mx-auto mb-8'>
-            <div className='flex justify-around'>
+        <div className='md:w-1/2 mx-auto mb-8'>
+            <div className='flex justify-around flex-wrap'>
                 {hand && hand.map((card: Card) => {
                         const value: string = values[card.value] ?? card.value
 
                         return (
-                            <div className='w-32 transition hover:animate-pulse hover:scale-110'
+                            <div className='w-20 md:w-32 transition hover:animate-pulse hover:scale-110'
                                  title={`Value: ${value}`}
                                  key={card.code}>
                                 <Image src={card.image} alt={card.code} width={100} height={300} priority
@@ -33,7 +33,7 @@ export default function Player({ hand, score, title }: Props) {
                     }
                 )}
             </div>
-            <h1 className='font-bold text-3xl text-center my-8'>{title}: {score}</h1>
+            <h1 className='font-bold text-3xl text-center my-4 md:my-8'>{title}: {score}</h1>
         </div>
     )
 }

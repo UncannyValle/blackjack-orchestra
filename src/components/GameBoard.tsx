@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Card } from "@/app/page";
 import { calculatePointTotal } from "@/lib/scoreCountingLogic";
 import { getCard, shuffleDeck } from "@/lib/gamePlayLogic"
@@ -15,39 +15,28 @@ type GameBoardProps = {
 export default function GameBoard({ initialHouse, initialPlayer, deckId }: GameBoardProps) {
     const [house, setHouse] = useState(initialHouse)
     const [player, setPlayer] = useState(initialPlayer)
-    const [score, setScore] = useState({ house: 0, player: 0 });
     const [gameStatus, setGameStatus] = useState('playing')
 
-    useEffect(() => {
-        const updateScore = () => {
-            const newHouseScore = calculatePointTotal(house)
-            const newPlayerScore = calculatePointTotal(player)
-            setScore({ player: newPlayerScore, house: newHouseScore });
-        }
+    const houseScore = useMemo(() => calculatePointTotal(house), [house]);
+    const playerScore = useMemo(() => calculatePointTotal(player), [player]);
 
-        if (score.player > 21 || score.house === 21) {
+    useEffect(() => {
+        if (playerScore > 21 || houseScore === 21) {
             setGameStatus('lost')
         }
-        if (score.player === 21) {
+        if (playerScore === 21) {
             setGameStatus('won')
         }
 
-        if (score.player === 0 && score.house === 0) {
-            setGameStatus('playing')
-        }
-
-        updateScore();
-
-    }, [house, player, score.house, score.player])
+    }, [houseScore, playerScore])
 
     const drawCard = async () => {
         const newCard = await getCard(deckId, 1)
-
         setPlayer([...player, newCard.cards[0]])
     }
 
     const handleStand = () => {
-        if (score.player >= score.house) {
+        if (playerScore >= houseScore) {
             return setGameStatus('won');
         }
 
@@ -56,19 +45,18 @@ export default function GameBoard({ initialHouse, initialPlayer, deckId }: GameB
 
     const handleNewGame = async () => {
         await shuffleDeck(deckId);
-
         const [newHouseHand, newPlayerHand] = await Promise.all([getCard(deckId, 2), getCard(deckId, 2)])
-        setScore({ house: 0, player: 0 })
 
         setHouse(newHouseHand.cards)
         setPlayer(newPlayerHand.cards)
+        setGameStatus('playing')
     }
 
     return (
-        <div>
-            <Player title="The House" hand={house} score={score.house}/>
+        <>
+            <Player title="The House" hand={house} score={houseScore}/>
             <hr className='h-0.5  bg-slate-600 mb-8'/>
-            <Player title="The Player" hand={player} score={score.player}/>
+            <Player title="The Player" hand={player} score={playerScore}/>
 
             {gameStatus === 'playing' &&
                 <div className="text-center">
@@ -101,6 +89,6 @@ export default function GameBoard({ initialHouse, initialPlayer, deckId }: GameB
                 </div>
             }
 
-        </div>
+        </>
     );
 }

@@ -34,8 +34,9 @@ export default async function Home() {
     const player: DrawCardsResponse = await getInitialCards(deckId);
 
     return (
-        <main className="container mx-auto min-h-screen p-24 text-center">
-            <h1 className='font-bold text-6xl mb-16'>Let&apos;s Play Some Blackjack!</h1>
+        <main
+            className="container min-h-screen p-8 md:p-24 flex justify-center items-center flex-col text-center mx-auto">
+            <h1 className='font-bold text-4xl mb-8 md:mb-16'>Let&apos;s Play Some Blackjack!</h1>
             <GameBoard initialHouse={house.cards} initialPlayer={player.cards} deckId={deckId}/>
         </main>
     );
