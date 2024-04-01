@@ -1,10 +1,10 @@
 'use client'
 
-import { useEffect, useMemo, useState } from "react";
+import { lazy, Suspense } from "react";
 import { Card } from "@/app/page";
-import { calculatePointTotal } from "@/lib/scoreCountingLogic";
-import { getCard, shuffleDeck } from "@/lib/gamePlayLogic"
-import Player from "@/components/Player";
+import useBlackjackGame from "@/hooks/useBlackjackGame";
+
+const Player = lazy(() => import('@/components/Player'));
 
 type GameBoardProps = {
     initialHouse: Card[]
@@ -13,55 +13,29 @@ type GameBoardProps = {
 }
 
 export default function GameBoard({ initialHouse, initialPlayer, deckId }: GameBoardProps) {
-    const [house, setHouse] = useState(initialHouse)
-    const [player, setPlayer] = useState(initialPlayer)
-    const [gameStatus, setGameStatus] = useState('playing')
+    const {
+        house,
+        player,
+        gameStatus,
+        drawCard,
+        handleNewGame,
+        handleStand,
+        houseScore,
+        playerScore
+    } = useBlackjackGame(deckId, initialHouse, initialPlayer)
+    const LoadingPlayer = () => <p>Loading Player...</p>;
 
-    const houseScore = useMemo(() => calculatePointTotal(house), [house]);
-    const playerScore = useMemo(() => calculatePointTotal(player), [player]);
-
-    useEffect(() => {
-        if (playerScore > 21 || houseScore === 21) {
-            return setGameStatus('lost')
-        }
-        if (playerScore === 21) {
-            return setGameStatus('won')
-        }
-
-    }, [houseScore, playerScore])
-
-    const drawCard = async () => {
-        const newCard = await getCard(deckId, 1)
-        setPlayer([...player, newCard.cards[0]])
-    }
-
-    const handleStand = () => {
-        if (playerScore >= houseScore) {
-            return setGameStatus('won');
-        }
-
-        return setGameStatus('lost')
-    }
-
-    const handleNewGame = async () => {
-        setGameStatus('loading')
-        await shuffleDeck(deckId);
-        const [newHouseHand, newPlayerHand] = await Promise.all([getCard(deckId, 2), getCard(deckId, 2)])
-
-        setHouse(newHouseHand.cards)
-        setPlayer(newPlayerHand.cards)
-        setGameStatus('playing')
-    }
 
     return (
         <>
-            {gameStatus !== 'loading' ? <>
-                    <Player title="The House" hand={house} score={houseScore}/>
-                    <hr className='h-0.5  bg-slate-600 mb-8'/>
-                    <Player title="The Player" hand={player} score={playerScore}/>
-                </> :
-                <h1>Loading Cards...</h1>
-            }
+
+            <Suspense fallback={<LoadingPlayer/>}>
+                <Player title="The House" hand={house} score={houseScore}/>
+            </Suspense>
+            <hr className="h-0.5 bg-slate-600 mb-8"/>
+            <Suspense fallback={<LoadingPlayer/>}>
+                <Player title="The Player" hand={player} score={playerScore}/>
+            </Suspense>
 
 
             {gameStatus === 'playing' || gameStatus === 'loading' ?
